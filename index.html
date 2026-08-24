@@ -621,11 +621,21 @@
 
   /* ===== TESTIMONIOS ===== */
   #testimonios { background: var(--cream); }
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 28px;
+  .testimonials-carousel {
+    position: relative;
     margin-top: 60px;
+    overflow: hidden;
+  }
+  .testimonials-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .testimonials-slide {
+    min-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    padding: 4px;
   }
   .testimonial-card {
     background: white;
@@ -659,7 +669,7 @@
   }
   .testimonial-text {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-style: italic;
     color: var(--text-body);
     line-height: 1.7;
@@ -684,6 +694,7 @@
     font-weight: 500;
     font-size: 0.75rem;
     letter-spacing: 1px;
+    flex-shrink: 0;
   }
   .testimonial-name {
     font-weight: 600;
@@ -697,6 +708,104 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: 2px;
+  }
+  .testimonial-google {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+  .testimonial-google svg {
+    width: 14px;
+    height: 14px;
+  }
+  .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .carousel-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(45,106,79,0.15);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--secondary);
+  }
+  .carousel-btn:hover {
+    border-color: var(--accent);
+    background: rgba(82,183,136,0.05);
+  }
+  .carousel-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .carousel-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+  .carousel-dots {
+    display: flex;
+    gap: 8px;
+  }
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(45,106,79,0.15);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 0;
+  }
+  .carousel-dot.active {
+    background: var(--accent);
+    width: 24px;
+    border-radius: 4px;
+  }
+  .testimonials-summary {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(45,106,79,0.08);
+  }
+  .testimonials-rating {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1;
+  }
+  .testimonials-rating-stars {
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin: 8px 0;
+  }
+  .testimonials-rating-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+  .testimonials-rating-label a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .testimonials-rating-label a:hover {
+    color: var(--accent);
   }
 
   /* ===== CONTACTO ===== */
@@ -966,7 +1075,8 @@
     .about-grid,
     .contact-grid { grid-template-columns: 1fr; gap: 40px; }
     .about-image { aspect-ratio: 16/10; }
-    .testimonials-grid { grid-template-columns: 1fr; }
+    .testimonials-slide { grid-template-columns: 1fr; }
+    .testimonial-card { min-width: 0; }
     .footer-inner { grid-template-columns: 1fr; gap: 32px; }
     .about-values { grid-template-columns: 1fr; }
 
@@ -1196,45 +1306,108 @@
     <div class="text-center">
       <span class="section-badge">Testimonios</span>
       <h2 class="section-title">Lo que dicen<br>nuestras clientas</h2>
-      <p class="section-desc mx-auto">La confianza de nuestras clientas es nuestro mayor logro.</p>
+      <p class="section-desc mx-auto">7 opiniones reales de Google Maps. 5.0 estrellas.</p>
     </div>
-    <div class="testimonials-grid">
-      <div class="testimonial-card fade-in">
-        <div class="testimonial-quote">&ldquo;</div>
-        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testimonial-text">"Encontré en Bonita exactamente lo que buscaba: un lugar profesional, limpio y con resultados increíbles. Mis pestañas nunca se habían visto tan bien."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">VM</div>
-          <div>
-            <div class="testimonial-name">Valentina M.</div>
-            <div class="testimonial-service">Pestañas + Facial</div>
+    <div class="testimonials-carousel fade-in">
+      <div class="testimonials-track" id="testimonialsTrack">
+        <!-- Slide 1 -->
+        <div class="testimonials-slide">
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"Lugar encantador, atenci&oacute;n maravillosa del equipo. &iexcl;Muchas gracias!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AE</div>
+              <div>
+                <div class="testimonial-name">Adrian Escalante</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"&iexcl;Un lugar muy bonito y agradable! Productos de excelente calidad y personal muy profesional."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">LO</div>
+              <div>
+                <div class="testimonial-name">Liliana Ortiz L.</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"Excelente atenci&oacute;n y servicios igualmente excelentes. Altamente recomendado."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">LH</div>
+              <div>
+                <div class="testimonial-name">Luz Adriana Hoyos</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="testimonials-slide">
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"Bonita es un lugar muy equilibrado donde tuve una experiencia maravillosa. El t&eacute; y las galletas de bienvenida estaban deliciosos, y el masaje relajante fue excelente. Lo recomiendo mucho."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">RS</div>
+              <div>
+                <div class="testimonial-name">Rosiris Serrano</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"Excelente servicio, &iexcl;nota 10! Me encant&oacute; el dise&ntilde;o de cejas, la depilaci&oacute;n y la coloraci&oacute;n."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">YH</div>
+              <div>
+                <div class="testimonial-name">Yessica Henao B.</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-quote">&ldquo;</div>
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p class="testimonial-text">"&iexcl;Un lugar excelente, con muy buena atenci&oacute;n!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">RG</div>
+              <div>
+                <div class="testimonial-name">Rosana Gutierrez</div>
+                <div class="testimonial-google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="testimonial-card fade-in">
-        <div class="testimonial-quote">&ldquo;</div>
-        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testimonial-text">"La sueroterapia fue una revelación. Llegué agotada y salí con una energía y un brillo en la piel que no había sentido en meses. 100% recomendado."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">LC</div>
-          <div>
-            <div class="testimonial-name">Laura C.</div>
-            <div class="testimonial-service">Sueroterapia</div>
-          </div>
+      <!-- Carousel controls -->
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="carouselPrev" aria-label="Anterior">
+          <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <div class="carousel-dots">
+          <button class="carousel-dot active" data-slide="0" aria-label="Slide 1"></button>
+          <button class="carousel-dot" data-slide="1" aria-label="Slide 2"></button>
         </div>
+        <button class="carousel-btn" id="carouselNext" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
       </div>
-      <div class="testimonial-card fade-in">
-        <div class="testimonial-quote">&ldquo;</div>
-        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testimonial-text">"Vine como turista y me encantó la atención. El facial dejó mi piel perfecta, y los precios son increíbles comparados con mi país. ¡Ya reservé para mi próxima visita!"</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">SR</div>
-          <div>
-            <div class="testimonial-name">Sarah R.</div>
-            <div class="testimonial-service">Facial + Cejas</div>
-          </div>
-        </div>
-      </div>
+    </div>
+    <!-- Summary -->
+    <div class="testimonials-summary fade-in">
+      <div class="testimonials-rating">5.0</div>
+      <div class="testimonials-rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="testimonials-rating-label">7 opiniones en <a href="https://maps.app.goo.gl/gTKF6AEjCRuhNWvCA" target="_blank" rel="noopener">Google Maps</a></div>
     </div>
   </div>
 </section>
@@ -1386,4 +1559,44 @@
       }
     });
   });
+
+  // Testimonials carousel
+  (function() {
+    const track = document.getElementById('testimonialsTrack');
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+    const dots = document.querySelectorAll('.carousel-dot');
+    if (!track) return;
+    let current = 0;
+    const total = dots.length;
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, total - 1));
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.slide))));
+    goTo(0);
+
+    // Auto-advance every 6s, pause on hover
+    let autoPlay = setInterval(() => goTo(current < total - 1 ? current + 1 : 0), 6000);
+    const carousel = document.querySelector('.testimonials-carousel');
+    carousel.addEventListener('mouseenter', () => clearInterval(autoPlay));
+    carousel.addEventListener('mouseleave', () => {
+      autoPlay = setInterval(() => goTo(current < total - 1 ? current + 1 : 0), 6000);
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    carousel.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+    }, { passive: true });
+  })();
 </script>
