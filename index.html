@@ -308,7 +308,7 @@
   .mx-auto { margin-left: auto; margin-right: auto; }
 
   /* ===== SERVICIOS ===== */
-  #servicios { background: var(--cream); padding: 100px 0; }
+  #servicios { background: var(--cream); padding: 100px 0; overflow: hidden; }
   .services-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -358,6 +358,22 @@
   }
   .service-card:hover .service-img-overlay {
     opacity: 1;
+  }
+  .service-img-placeholder {
+    background: linear-gradient(135deg, #e8ddd3 0%, #d4c5b5 30%, #c9b8a5 60%, #bfae98 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .service-img-placeholder::after {
+    content: 'Faciales';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(27, 67, 50, 0.25);
+    letter-spacing: 4px;
   }
   .service-tag {
     position: absolute;
@@ -871,9 +887,12 @@
     section { padding: 60px 20px; }
     .services-grid { grid-template-columns: 1fr; }
     .service-card.featured { grid-template-columns: 1fr; }
-    .service-card.featured .service-img { min-height: 240px; }
-    .service-card.featured .service-body { padding: 28px; }
-    .service-card.featured h3 { font-size: 1.5rem; }
+    .service-card.featured .service-img { min-height: 200px; height: 200px; }
+    .service-card.featured .service-body { padding: 24px 20px; }
+    .service-card.featured h3 { font-size: 1.4rem; }
+    .service-img { height: 200px; }
+    .service-card { max-width: 100%; }
+    .service-img-wrap { max-width: 100%; }
     .highlight-grid,
     .about-grid,
     .contact-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -881,8 +900,17 @@
     .testimonials-grid { grid-template-columns: 1fr; }
     .footer-inner { grid-template-columns: 1fr; gap: 32px; }
     .about-values { grid-template-columns: 1fr; }
-    .highlight-visual { flex-direction: row; flex-wrap: wrap; }
-    .stat-card { flex: 1; min-width: 200px; }
+
+    .highlight-section { padding: 60px 0; }
+    .highlight-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+    .highlight-content h2 { font-size: 1.8rem; }
+    .highlight-desc { font-size: 0.9rem; }
+    .highlight-benefits { text-align: left; }
+    .benefit-item { justify-content: flex-start; }
+    .highlight-cta { margin: 0 auto; }
+    .highlight-visual { flex-direction: column; gap: 12px; }
+    .stat-card { padding: 20px 16px; }
+    .stat-number { font-size: 2rem; }
     .highlight-bg-letter { display: none; }
   }
 </style>
@@ -951,7 +979,7 @@
       <div class="service-card featured fade-in">
         <div class="service-img-wrap">
           <span class="service-tag">Tratamiento estrella</span>
-          <img class="service-img" src="data:image/jpeg;base64,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" alt="Tratamiento facial profesional">
+          <div class="service-img service-img-placeholder" aria-label="Tratamiento facial profesional"></div>
           <div class="service-img-overlay"></div>
         </div>
         <div class="service-body">
